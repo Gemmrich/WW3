@@ -66,6 +66,7 @@ PROGRAM W3OUNF
   !/    22-Mar-2021 : New coupling fields output          ( version 7.12 )
   !/    02-Sep-2021 : Added coordinates attribute         ( version 7.12 )
   !/    14-Feb-2023 : Added QKK output                    ( version 7.12 )
+  !/    05_Dec_2023 : Add CTCOR parameter                 ( version 7.14 )
   !/
   !/    Copyright 2009-2013 National Weather Service (NWS),
   !/       National Oceanic and Atmospheric Administration.  All rights
@@ -193,7 +194,7 @@ PROGRAM W3OUNF
        CFLTHMAX, CFLXYMAX, CFLKMAX, TAUICE, PHICE,  &
        STMAXE, STMAXD, HMAXE, HCMAXE, HMAXD, HCMAXD,&
        P2SMS, EF, US3D, TH1M, STH1M, TH2M, STH2M,   &
-       WN, USSP, WBT, WNMEAN, QKK
+       WN, USSP, WBT, WNMEAN, QKK, CTCOR
   USE W3ODATMD, ONLY: NDSO, NDSE, SCREEN, NOGRP, NGRPP, IDOUT,     &
        UNDEF, FLOGRD, FNMPRE, NOSWLL, NOGE
   !
@@ -1402,6 +1403,10 @@ CONTAINS
             ELSE
               CALL W3S2XY ( NSEA, NSEA, NX+1, NY, WNMEAN, MAPSF, X1 )
             END IF
+            !
+			! Crest-trough correlation
+            ELSE IF ( IFI .EQ. 2 .AND. IFJ .EQ. 21 ) THEN
+            CALL S2GRID(CTCOR, X1)
             !
             ! Wave elevation spectrum
           ELSE IF ( IFI .EQ. 3 .AND. IFJ .EQ. 1 ) THEN

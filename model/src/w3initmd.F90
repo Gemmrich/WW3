@@ -71,6 +71,7 @@ MODULE W3INITMD
   !/    25-Sep-2020 : Extra fields for coupling restart   ( version 7.10 )
   !/    22-Mar-2021 : Extra coupling fields               ( version 7.13 )
   !/    22-Jun-2021 : GKE NL5 (Q. Liu)                    ( version 7.13 )
+  !/    05-Dec-2023 : Add CTCOR parameter                 ( version 7.14 )
   !/
   !/    Copyright 2009-2013 National Weather Service (NWS),
   !/       National Oceanic and Atmospheric Administration.  All rights
@@ -2150,7 +2151,7 @@ CONTAINS
          STMAXE, STMAXD, HMAXE, HCMAXE, HMAXD,     &
          HCMAXD, QP, PTHP0, PQP, PPE, PGW, PSW,    &
          PTM1, PT1, PT2, PEP, WBT, CX, CY,         &
-         TAUOCX, TAUOCY, WNMEAN, QKK
+         TAUOCX, TAUOCY, WNMEAN, QKK, CTCOR
 #endif
 
 #ifdef W3_MPI
@@ -2503,6 +2504,18 @@ CONTAINS
 #endif
 #ifdef W3_MPIT
           WRITE (NDST,9011) IH, ' 2/19', IROOT, IT, IRQGO(IH), IERR
+#endif
+#ifdef W3_MPI
+        END IF
+        !
+        IF ( FLGRDALL( 2, 21) ) THEN
+          IH     = IH + 1
+          IT     = IT + 1
+          CALL MPI_SEND_INIT (CTCOR  (1),NSEALM , MPI_REAL, IROOT,    &
+               IT, MPI_COMM_WAVE, IRQGO(IH), IERR)
+#endif
+#ifdef W3_MPIT
+          WRITE (NDST,9011) IH, ' 2/21', IROOT, IT, IRQGO(IH), IERR
 #endif
 #ifdef W3_MPI
         END IF
@@ -3751,6 +3764,18 @@ CONTAINS
 #endif
 #ifdef W3_MPIT
             WRITE (NDST,9011) IH, ' 2/19', IFROM, IT, IRQGO2(IH), IERR
+#endif
+#ifdef W3_MPI
+          END IF
+		  !
+		  IF ( FLGRDALL( 2, 21) ) THEN
+            IH     = IH + 1
+            IT     = IT + 1
+            CALL MPI_RECV_INIT (CTCOR(I0),1,WW3_FIELD_VEC, IFROM, IT,  &
+                 MPI_COMM_WAVE, IRQGO2(IH), IERR )
+#endif
+#ifdef W3_MPIT
+            WRITE (NDST,9011) IH, ' 2/21', IFROM, IT, IRQGO2(IH), IERR
 #endif
 #ifdef W3_MPI
           END IF

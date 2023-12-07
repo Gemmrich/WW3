@@ -62,6 +62,7 @@ MODULE W3ADATMD
   !/    21-Aug-2018 : Add WBT parameter                   ( version 6.06 )
   !/    22-Mar-2021 : Adds TAUA, WNMEAN, TAUOC parameters ( version 7.13 )
   !/    06-May-2021 : SMC shares variables with PR2/3.    ( version 7.13 )
+  !/    05-Dec-2023 : Add CTCOR parameter                 ( version 7.14 )
   !
   !/
   !/    Copyright 2009-2013 National Weather Service (NWS),
@@ -194,6 +195,8 @@ MODULE W3ADATMD
   !      CFLXYMAX  R.A.  Public   Max. CFL number for spatial advection.
   !      CFLTHMAX  R.A.  Public   Max. CFL number for refraction.
   !      CFLKMAX   R.A.  Public   Max. CFL number for wavenumber shift.
+  !
+  !      CTCOR     R.A.  Public   Crest-trough correlation
   !
   !    Orphans, commented out here, now automatic arrays in W3WAVE, ....
   !
@@ -406,14 +409,14 @@ MODULE W3ADATMD
          THS(:),  THP0(:),                   &
          HSIG(:), STMAXE(:), STMAXD(:),      &
          HMAXE(:), HCMAXE(:), HMAXD(:),      &
-         HCMAXD(:), QP(:), WBT(:), WNMEAN(:)
+         HCMAXD(:), QP(:), WBT(:), WNMEAN(:), CTCOR(:)
     REAL, POINTER         :: XHS(:), XWLM(:), XT02(:), XT0M1(:),  &
          XT01 (:), XFP0(:), XTHM(:),          &
          XTHS(:), XTHP0(:),                   &
          XHSIG(:), XSTMAXE(:), XSTMAXD(:),    &
          XHMAXE(:), XHCMAXE(:), XHMAXD(:),    &
          XHCMAXD(:), XQP(:), XWBT(:),         &
-         XWNMEAN(:)
+         XWNMEAN(:), XCTCOR(:)
     !
     ! Output fields group 3)
     !
@@ -587,7 +590,7 @@ MODULE W3ADATMD
        THP0(:), HSIG(:),                    &
        STMAXE(:), STMAXD(:), HMAXE(:),      &
        HCMAXE(:), HMAXD(:), HCMAXD(:),      &
-       QP(:), WBT(:), WNMEAN(:)
+       QP(:), WBT(:), WNMEAN(:),CTCOR(:)
   !
   REAL, POINTER           :: EF(:,:), TH1M(:,:), STH1M(:,:),      &
        TH2M(:,:), STH2M(:,:)
@@ -1048,6 +1051,7 @@ CONTAINS
          WADATS(IMOD)%HCMAXD(NSEALM), WADATS(IMOD)%QP(NSEALM),      &
          WADATS(IMOD)%WBT(NSEALM),                                  &
          WADATS(IMOD)%WNMEAN(NSEALM),                               &
+		 WADATS(IMOD)%CTCOR(NSEALM),                                &
          STAT=ISTAT )
     CHECK_ALLOC_STATUS ( ISTAT )
     !
@@ -1070,7 +1074,8 @@ CONTAINS
     WADATS(IMOD)%QP     = UNDEF
     WADATS(IMOD)%WBT    = UNDEF
     WADATS(IMOD)%WNMEAN = UNDEF
-
+    WADATS(IMOD)%CTCOR  = UNDEF
+	
     call print_memcheck(memunit, 'memcheck_____:'//' W3DIMA 3')
     !
     ! 3) Frequency-dependent standard parameters
@@ -1725,6 +1730,14 @@ CONTAINS
       ALLOCATE ( WADATS(IMOD)%XWNMEAN(1), STAT=ISTAT )
       CHECK_ALLOC_STATUS ( ISTAT )
     END IF
+	!
+	IF ( OUTFLAGS( 2, 20) ) THEN
+      ALLOCATE ( WADATS(IMOD)%XCTCOR (NXXX), STAT=ISTAT )
+      CHECK_ALLOC_STATUS ( ISTAT )
+    ELSE
+      ALLOCATE ( WADATS(IMOD)%XCTCOR (1), STAT=ISTAT )
+      CHECK_ALLOC_STATUS ( ISTAT )
+    END IF
     !
     WADATS(IMOD)%XHS    = UNDEF
     WADATS(IMOD)%XWLM   = UNDEF
@@ -1744,6 +1757,7 @@ CONTAINS
     WADATS(IMOD)%XHCMAXD= UNDEF
     WADATS(IMOD)%XWBT   = UNDEF
     WADATS(IMOD)%XWNMEAN= UNDEF
+	WADATS(IMOD)%XCTCOR = UNDEF
     !
     IF ( OUTFLAGS( 3, 1) ) THEN
       ALLOCATE ( WADATS(IMOD)%XEF(NXXX,E3DF(2,1):E3DF(3,1)), STAT=ISTAT )
@@ -2832,6 +2846,7 @@ CONTAINS
       QP     => WADATS(IMOD)%QP
       WBT    => WADATS(IMOD)%WBT
       WNMEAN => WADATS(IMOD)%WNMEAN
+	  CTCOR  => WADATS(IMOD)%CTCOR
       !
       EF     => WADATS(IMOD)%EF
       TH1M   => WADATS(IMOD)%TH1M
@@ -3095,6 +3110,7 @@ CONTAINS
     !/    25-Dec-2012 : Origination.                        ( version 4.11 )
     !/    30-Apr-2014 : Add s/th1-2m                        ( version 5.01 )
     !/    22-Mar-2021 : Adds WNMEAN, TAUOC parameters       ( version 7.13 )
+	!/    05-Dec_2023 : Adds WCTCOR parameter               ( version 7.14 )
     !/
     !  1. Purpose :
     !
@@ -3172,6 +3188,7 @@ CONTAINS
       QP     => WADATS(IMOD)%XQP
       WBT    => WADATS(IMOD)%XWBT
       WNMEAN => WADATS(IMOD)%XWNMEAN
+	  CTCOR  => WADATS(IMOD)%XCTCOR
       !
       EF     => WADATS(IMOD)%XEF
       TH1M   => WADATS(IMOD)%XTH1M

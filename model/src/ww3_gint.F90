@@ -42,6 +42,7 @@ PROGRAM W3GRID_INTERP
   !/    26-Jan-2021 : Added TP field (derived from FP)    ( version 7.12 )
   !/    22-Mar-2021 : New coupling fields output          ( version 7.13 )
   !/    02-Jun-2021 : Bug fix (*SUMGRD; Q. Liu)           ( version 7.13 )
+  !/    05-Dec_2023 : Added CTCOR parameter               ( version 7.14 )
   !/
   !   1. Purpose :
   !
@@ -1093,7 +1094,7 @@ CONTAINS
          FP0AUX, THMAUX1, THMAUX2, THSAUX, THP0AUX1,   &
          THP0AUX2, HSIGAUX, STMAXEAUX,STMAXDAUX,       &
          HMAXEAUX, HCMAXEAUX, HMAXDAUX, HCMAXDAUX,     &
-         WBTAUX, WNMEANAUX, SUMWT2(NOGE(2))
+         WBTAUX, WNMEANAUX, CTCORAUX, SUMWT2(NOGE(2))
     ! Local group 3 variables
     REAL          :: EFAUX(E3DF(2,1):E3DF(3,1)),                   &
          TH1MAUX(E3DF(2,2):E3DF(3,2)),                 &
@@ -1198,6 +1199,7 @@ CONTAINS
     HCMAXD   = UNDEF
     WBT      = UNDEF
     WNMEAN   = UNDEF
+	CTCOR    = UNDEF
     !
     ! Group 3 variables
     !
@@ -1434,6 +1436,7 @@ CONTAINS
             HCMAXDAUX   = UNDEF
             WBTAUX      = UNDEF
             WNMEANAUX   = UNDEF
+            CTCORAUX    = UNDEF
             SUMWT2      = 0
             !
             ! Group 3 variables
@@ -1888,7 +1891,15 @@ CONTAINS
                 END IF
               END IF
               !
-              ! Group 3 variables
+              IF ( FLOGRD(2,21) .AND. ACTIVE ) THEN
+                IF ( WADATS(IGRID)%CTCOR(GSEA) .NE. UNDEF ) THEN
+                  SUMWT2(21) = SUMWT2(21) + WT
+                  IF ( CTCORAUX .EQ. UNDEF )   CTCORAUX = 0.
+                  CTCORAUX = CTCORAUX + WADATS(IGRID)%CTCOR(GSEA)*WT
+                END IF
+              END IF
+              !
+			  ! Group 3 variables
               !
               IF ( FLOGRD(3,1) .AND. ACTIVE ) THEN
                 DO IFREQ = E3DF(2,1),E3DF(3,1)
@@ -2827,6 +2838,12 @@ CONTAINS
               IF ( WNMEAN(ISEA) .EQ. UNDEF )   WNMEAN(ISEA) = 0.
               WNMEAN(ISEA) = WNMEAN(ISEA) +                      &
                    WNMEANAUX / REAL( SUMWT2(19)*SUMGRD )
+            END IF
+            !
+			IF ( CTCORAUX .NE. UNDEF ) THEN
+              IF ( CTCOR(ISEA) .EQ. UNDEF )   CTCOR(ISEA) = 0.
+              CTCOR(ISEA) = CTCOR(ISEA) +                            &
+                   CTCORAUX / REAL( SUMWT2(21)*SUMGRD )
             END IF
             !
             ! Group 3 variables

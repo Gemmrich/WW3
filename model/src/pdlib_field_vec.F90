@@ -830,7 +830,7 @@ CONTAINS
          STH2M, HSIG, TAUICE, PHICE, PTHP0, PQP,&
          PPE, PGW, PSW, PTM1, PT1, PT2, PEP,   &
          QP, MSSD, MSCD, STMAXE, STMAXD, HMAXE, &
-         HCMAXE, HMAXD, HCMAXD, WBT, USSP
+         HCMAXE, HMAXD, HCMAXD, WBT, USSP, CTCOR
     USE W3GDATMD, ONLY: NK, NSEAL
     USE W3ODATMD, ONLY: NDST, IAPROC, NAPROC, NTPROC, FLOUT,   &
          NAPFLD, NAPPNT, NAPRST, NAPBPT, NAPTRK,&
@@ -968,6 +968,9 @@ CONTAINS
             IH = IH + 1
             Arrexch(IH,JSEA)=WNMEAN(JSEA)
           END IF
+		  IF ( FLGRDALL( 2, 21) ) THEN
+            IH = IH + 1
+            Arrexch(IH,JSEA)=CTCOR(JSEA)
           IF ( FLGRDALL( 3, 1) ) THEN
             DO IK=E3DF(2,1),E3DF(3,1)
               IH = IH + 1
@@ -1410,6 +1413,10 @@ CONTAINS
         IF ( FLGRDALL( 2, 19) ) THEN
           IH = IH + 1
           WNMEAN(1:NSEA) = ARRtotal(IH,:)
+        END IF
+		IF ( FLGRDALL( 2, 21) ) THEN
+          IH = IH + 1
+          CTCOR(1:NSEA) = ARRtotal(IH,:)
         END IF
         IF ( FLGRDALL( 3, 1) ) THEN
           DO IK=E3DF(2,1),E3DF(3,1)

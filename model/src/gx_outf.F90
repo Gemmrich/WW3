@@ -70,6 +70,7 @@ PROGRAM GXOUTF
   !/    27-Aug-2015 : ICEH and ICEF added as output       ( version 5.10 )
   !/    25-Aug-2018 : Add WBT parameter                   ( version 6.06 )
   !/    22-Mar-2021 : RHOA and TAUA added as output       ( version 7.13 )
+  !/    05-Dec-2023 : Add CTCOR parameter                 ( version 7.14 )
   !/
   !/
   !/    Copyright 2009 National Weather Service (NWS),
@@ -173,7 +174,7 @@ PROGRAM GXOUTF
        TAUWNX,  TAUWNY, BHD, P2SMS, DTDYN,          &
        CGE, T02, BEDFORMS, WHITECAP, TAUBBL, PHIBBL,&
        CFLXYMAX, CFLTHMAX, CFLKMAX, US3D, STMAXE,   &
-       STMAXD, HMAXE, HCMAXE, HMAXD, HCMAXD, WBT
+       STMAXD, HMAXE, HCMAXE, HMAXD, HCMAXD, WBT, CTCOR
   USE W3ODATMD, ONLY: NDSE, NDST, NDSO, NOGRP, NGRPP, IDOUT, UNDEF,&
        FLOGRD, FNMPRE, NOSWLL, NOGE
   !
@@ -1126,6 +1127,12 @@ CONTAINS
             FLONE = .TRUE.
             CALL W3S2XY ( NSEA, NSEA, NX, NY, WBT  , MAPSF, X1 )
             !
+            !      crest-trough correlation
+            !
+          ELSE IF ( J.EQ.2 .AND. K.EQ.21 ) THEN
+            FLONE = .TRUE.
+            CALL W3S2XY ( NSEA, NSEA, NX, NY, CTCOR , MAPSF, X1 )  
+			!
             !     Partitioned wave heights
             !
           ELSE IF ( J.EQ.4 .AND. K.EQ.1 ) THEN

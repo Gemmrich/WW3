@@ -74,6 +74,7 @@ MODULE W3IOGOMD
   !/    22-Mar-2021 : Add extra coupling fields as output ( version 7.13 )
   !/    21-Jul-2022 : Correct FP0 calc for peak energy in ( version 7.14 )
   !/                  min/max freq band (B. Pouliot, CMC)
+  !/    05_Dec_2023 : Add CTCOR output parameter          ( version 7.14 )
   !/
   !/    Copyright 2009-2014 National Weather Service (NWS),
   !/       National Oceanic and Atmospheric Administration.  All rights
@@ -916,6 +917,9 @@ CONTAINS
       I = 2
       J = 20
 #endif
+    CASE('CTCOR')
+      I = 2
+      J = 21
       !
       ! Group 3
       !
@@ -1218,7 +1222,8 @@ CONTAINS
     !/    22-Aug-2018 : Add WBT parameter                   ( version 6.06 )
     !/    25-Sep-2019 : Corrected th2m and sth2m            ( version 6.07 )
     !/                  calculations. (J Dykes, NRL)
-    !/
+    !/    05-Dec-2023 : Add CTCOR parameter                 ( version 7.14 )
+	!/
     !  1. Purpose :
     !
     !     Fill necessary arrays with gridded data for output.
@@ -1297,7 +1302,7 @@ CONTAINS
          TH2M, STH2M, HSIG, STMAXE, STMAXD,          &
          HCMAXE, HMAXE, HCMAXD, HMAXD, USSP, QP, PQP,&
          PTHP0, PPE, PGW, PSW, PTM1, PT1, PT2, PEP,  &
-         WBT, QKK
+         WBT, QKK, CTCOR
     USE W3ODATMD, ONLY: NDST, UNDEF, IAPROC, NAPROC, NAPFLD,        &
          ICPRT, DTPRT, WSCUT, NOSWLL, FLOGRD, FLOGR2,&
          NOGRP, NGRPP
@@ -1451,23 +1456,24 @@ CONTAINS
     ALPXT  = UNDEF
     ALPYT  = UNDEF
     QKK    = UNDEF
-    THMP = UNDEF
-    T02P = UNDEF
+    THMP   = UNDEF
+    T02P   = UNDEF
     SCREST = UNDEF
-    NV = UNDEF
-    NS = UNDEF
-    NB = UNDEF
-    MU = UNDEF
-    NI = UNDEF
-    MODE = UNDEF
+    NV     = UNDEF
+    NS     = UNDEF
+    NB     = UNDEF
+    MU     = UNDEF
+    NI     = UNDEF
+    MODE   = UNDEF
     STMAXE = UNDEF
     STMAXD = UNDEF
     HCMAXE = UNDEF
-    HMAXE = UNDEF
+    HMAXE  = UNDEF
     HCMAXD = UNDEF
-    HMAXD = UNDEF
-    QP    = UNDEF
+    HMAXD  = UNDEF
+    QP     = UNDEF
     WBT    = UNDEF
+	CTCOR  = UNDEF
     !
     ! 2.  Integral over discrete part of spectrum ------------------------ *
     !
@@ -2417,6 +2423,7 @@ CONTAINS
     !/                  processing code)
     !/    25-Aug-2018 : Add WBT parameter                   ( version 6.06 )
     !/    22-Mar-2021 : Add extra coupling fields as output ( version 7.13 )
+    !/    05-Dec-2023 : Add CTCOR parameter                 ( version 7.14 )
     !/
     !  1. Purpose :
     !
@@ -2501,7 +2508,7 @@ CONTAINS
     USE W3ADATMD, ONLY: AINIT, DW, UA, UD, AS, CX, CY, WN,          &
          TAUA, TAUADIR
     USE W3ADATMD, ONLY: HS, WLM, T02, T0M1, T01, FP0, THM, THS, THP0,&
-         WBT, WNMEAN
+         WBT, WNMEAN, CTCOR
     USE W3ADATMD, ONLY: DTDYN, FCUT, ABA, ABD, UBA, UBD, SXX, SYY, SXY,&
          PHS, PTP, PLP, PDIR, PSI, PWS, PWST, PNR,    &
          PTHP0, PQP, PPE, PGW, PSW, PTM1, PT1, PT2,  &
@@ -2825,6 +2832,7 @@ CONTAINS
           IF ( FLOGRD( 2,16) ) HCMAXD(ISEA) = UNDEF
           IF ( FLOGRD( 2,17) ) WBT   (ISEA) = UNDEF
           IF ( FLOGRD( 2,19) ) WNMEAN(ISEA) = UNDEF
+		  IF ( FLOGRD( 2,21) ) CTCOR (ISEA) = UNDEF
           !
           IF ( FLOGRD( 3, 1) ) EF   (ISEA,:) = UNDEF
           IF ( FLOGRD( 3, 2) ) TH1M (ISEA,:) = UNDEF
@@ -3191,6 +3199,11 @@ CONTAINS
               WRITE ( NDSOG ) WNMEAN(1:NSEA)
 #ifdef W3_ASCII
               WRITE ( NDSOA,* ) 'WNMEAN:', WNMEAN(1:NSEA)
+#endif
+            ELSE IF ( IFI .EQ. 2 .AND. IFJ .EQ. 21 ) THEN
+              WRITE ( NDSOG ) CTCOR(1:NSEA)
+#ifdef W3_ASCII
+              WRITE ( NDSOA,* ) 'CTCOR:', CTCOR(1:NSEA)
 #endif
               !
               !     Section 3)
@@ -3745,6 +3758,9 @@ CONTAINS
             ELSE IF ( IFI .EQ. 2 .AND. IFJ .EQ. 19 ) THEN
               READ (NDSOG,END=801,ERR=802,IOSTAT=IERR)         &
                    WNMEAN(1:NSEA)
+	        ELSE IF ( IFI .EQ. 2 .AND. IFJ .EQ. 21 ) THEN
+              READ (NDSOG,END=801,ERR=802,IOSTAT=IERR)         & 
+			       CTCOR(1:NSEA)
               !
               !     Section 3)
               !
@@ -4609,5 +4625,182 @@ CONTAINS
     !/ End of  CALC_WBT -------------------------------------------------- /
     !/
   END SUBROUTINE CALC_WBT
+  !/ ------------------------------------------------------------------- /
+  !/
+  !/ ------------------------------------------------------------------- /
+  !>
+  !> @brief Calculate the crest-trough correlation r.
+  !>
+  !> @details Proxy of the crest-trough correlation r based on
+  !>  the crest-trough correlation at a lag corresponding to half the mean period, 
+  !>  as proposed by Tayfun & Fedele (2007).
+  !>
+  !> @verbatim
+  !>    
+  !>
+  !>       r = 1/m0 * sqrt(rho^2 + lambda^2)
+  !>     with
+  !>        rho    = integral(S(f) * cos(2*pi*f*T/2) df,
+  !>        lambda = integral(S(f) * sin(2*pi*f*T/2) df,
+  !>
+  !>     where S(f) is the 1-dimensional frequency spectrum, 
+  !>           T is the spectral mean period m0/m1
+  !>           m0, m1 are spectral moments
+  !>
+  !>     For more details, please see
+  !>         Tayfun & Fedele  2007: Ocean Engineering, 34, 1631-1649.
+  !>         Gemmrich et al. 2023: PHYSICAL REVIEW FLUIDS 8 (equation 16).
+  !> @endverbatim
+  !>
+  !> @param[in] SPEC  Input wave action spectra N(j, θ, k).
+  !>
+  !> @author J. Gemmrich  @date 05-Dec-2023
+  !>
+  SUBROUTINE CALC_CTCOR (A)
+    !/
+    !/                  +-----------------------------------+
+    !/                  | WAVEWATCH III           NOAA/NCEP |
+    !/                  |           J. Gemmrich             |
+    !/                  |                        FORTRAN 90 |
+    !/                  | Last update :         05-Dec-2023 |
+    !/                  +-----------------------------------+
+    !/
+    !/    05-Dec_2023 : Origination.                       ( version 7.14 )
+    !/
+    !  1. Purpose :
+    !
+    !     Calculate the crest-trough correlation r based on
+    !     the proxy proposed by Tayfun & Fedel, (2007
+    ! 
+    !	r = 1/m0 * sqrt(rho^2 + lambda^2)
+    !     with
+    !        rho    = integral(S(f) * cos(2*pi*f*T/2) df,
+    !        lambda = integral(S(f) * sin(2*pi*f*T/2) df,
+    !
+    !     where S(f) is the 1-dimensional frequency spectrum, 
+    !           T is the spectral mean period m0/m1
+    !           m0, m1 are spectral moments
+    !
+    !     For more details, please see
+    !         Tayfun & Fedele  2007: Ocean Engineering, 34, 1631-1649.
+    !         Gemmrich et al. 2023: PHYSICAL REVIEW FLUIDS 8 (equation 16).
+    !
+    !  2. Method :
+    !
+    !  3. Parameters :
+    !
+    !     Parameter list
+    !     ----------------------------------------------------------------
+    !       A       R.A.   I   Input wave action spectra N(j, θ, k)
+    !     ----------------------------------------------------------------
+    !
+    !  4. Subroutines used :
+    !
+    !  5. Called by :
+    !
+    !      Name      Type  Module   Description
+    !     ----------------------------------------------------------------
+    !      W3OUTG    Subr. Public   Calculate mean parameters.
+    !     ----------------------------------------------------------------
+    !
+    !  6. Error messages :
+    !
+    !     None.
+    !
+    !  8. Structure :
+    !
+    !     See source code.
+    !
+    !  9. Switches :
+    !
+    !     !/S     Enable subroutine tracing.
+    !     !/T     Test output.
+    !
+    ! 10. Source code :
+    !
+    !/ ------------------------------------------------------------------- /
+    USE W3ADATMD, ONLY: CTCOR
+    USE W3ADATMD, ONLY: CG, WN
+    USE W3GDATMD, ONLY: NK, NTH, NSEAL, SIG, DTH, DSII, &
+           MAPSF, MAPSTA
+    USE W3PARALL, ONLY: INIT_GET_ISEA
+#ifdef W3_S
+    USE W3SERVMD, ONLY: STRACE
+#endif
+    !
+    IMPLICIT NONE
+    !
+    !/ ------------------------------------------------------------------- /
+    !/ Parameter list
+    !/
+    REAL, INTENT(IN)     :: A  (NTH, NK, 0:NSEAL)
+    !/
+    !/ ------------------------------------------------------------------- /
+    !/ Local parameters
+    !/
+#ifdef W3_S
+    INTEGER, SAVE           :: IENT = 0
+#endif
+    !
+    INTEGER              :: FPOPT = 0
+    !
+    INTEGER              :: IK, ITH, ISEA, JSEA, IKM, IKL, IKH, IX, IY
+    REAL                 :: SINST, COSST, TC, RHOCT, LAMBDACT, M0, M1, TMS
+    REAL                 :: ESIG(NK) ! E(σ)
+    REAL                 :: FACTOR
+    REAL                 :: TCTCOR
+    !/
+    !/ ------------------------------------------------------------------- /
+    !/
+#ifdef W3_S
+    CALL STRACE (IENT, 'CALC_CTCOR')
+#endif
+    !
+    DO JSEA = 1, NSEAL
+      ! JSEA 2 ISEA
+      CALL INIT_GET_ISEA(ISEA, JSEA)
+      !
+      ! check the status of this grid point [escape if this point is excluded]
+      !
+      IX = MAPSF(ISEA,1)
+      IY = MAPSF(ISEA,2)
+      IF ( MAPSTA(IY,IX) .LE. 0 ) CYCLE
+      !
+      !
+      !
+      ESIG  = 0.                           ! E(σ)
+      !
+      DO IK = 1, NK
+        TC     = SIG(IK) / WN(IK, ISEA)  ! phase velocity c=σ/k
+        FACTOR = SIG(IK) / CG(IK, ISEA)  ! σ / cg
+        FACTOR = FACTOR * DTH            ! σ / cg * δθ
+        !
+        DO ITH = 1, NTH
+            ESIG(IK) = ESIG(IK) + A(ITH, IK, JSEA) * FACTOR
+        ENDDO ! ITH
+        !
+      ENDDO ! IK
+      !
+      ! ESIG is S(f).
+      !
+      ! Next: calculate moments, and mean spectral period TMS
+      M0 = SUM(ESIG * DSII)
+      M1 = SUM(SIG * ESIG * DSII)
+	  TMS = M0 / M1                       ! mean spectral period
+	  !
+	  COSST = COS(SIG * TMS/2.)
+	  SINST = SIN(SIG * TMS/2.)
+	  !
+	  RHOCT    = SUM(ESIG * COSST * DSII)
+	  LAMBDACT = SUM(ESIG * SINST * DSII)
+	  !
+	  TCTCOR = SQRT(MAX(0.,RHOCT**2 + LAMBDACT**2)) / M0   ! crest-trough correlation
+      CTCOR(JSEA) = MIN(1.0, TCTCOR)!
+      !
+    ENDDO ! JSEA
+    !/
+    !/ End of  CALC_CTCOR -------------------------------------------------- /
+    !/
+  END SUBROUTINE CALC_CTCOR
   !/ ------------------------------------------------------------------- /
 END MODULE W3IOGOMD
