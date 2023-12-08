@@ -4745,8 +4745,8 @@ CONTAINS
     INTEGER              :: FPOPT = 0
     !
     INTEGER              :: IK, ITH, ISEA, JSEA, IKM, IKL, IKH, IX, IY
-    REAL                 :: SINST, COSST, TC, RHOCT, LAMBDACT, M0, M1, TMS
-    REAL                 :: ESIG(NK) ! E(σ)
+    REAL                 :: TC, RHOCT, LAMBDACT, M0, M1, TMS
+    REAL                 :: ESINST(NK), ECOSST(NK), ESIG(NK) ! E(σ)
     REAL                 :: FACTOR
     REAL                 :: TCTCOR
     !/
@@ -4788,11 +4788,13 @@ CONTAINS
       M1 = SUM(SIG * ESIG * DSII)
 	  TMS = M0 / M1                       ! mean spectral period
 	  !
-	  COSST = COS(SIG * TMS/2.)
-	  SINST = SIN(SIG * TMS/2.)
+	  DO IK = 1, NK
+	   ECOSST(IK) = ESIG(IK) * COS(SIG(IK) * TMS/2.)
+	   ESINST(IK) = ESIG(IK) * SIN(SIG(IK) * TMS/2.)
+	  ENDDO
 	  !
-	  RHOCT    = SUM(ESIG * COSST * DSII)
-	  LAMBDACT = SUM(ESIG * SINST * DSII)
+	  RHOCT    = SUM(ECOSST * DSII)
+	  LAMBDACT = SUM(ESINST * DSII)
 	  !
 	  TCTCOR = SQRT(MAX(0.,RHOCT**2 + LAMBDACT**2)) / M0   ! crest-trough correlation
       CTCOR(JSEA) = MIN(1.0, TCTCOR)!
