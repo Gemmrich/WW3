@@ -971,6 +971,7 @@ CONTAINS
 		  IF ( FLGRDALL( 2, 21) ) THEN
             IH = IH + 1
             Arrexch(IH,JSEA)=CTCOR(JSEA)
+		  END IF
           IF ( FLGRDALL( 3, 1) ) THEN
             DO IK=E3DF(2,1),E3DF(3,1)
               IH = IH + 1
