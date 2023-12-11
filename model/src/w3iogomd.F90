@@ -1473,7 +1473,7 @@ CONTAINS
     HMAXD  = UNDEF
     QP     = UNDEF
     WBT    = UNDEF
-	CTCOR  = UNDEF
+    CTCOR  = UNDEF
     !
     ! 2.  Integral over discrete part of spectrum ------------------------ *
     !
@@ -2832,7 +2832,7 @@ CONTAINS
           IF ( FLOGRD( 2,16) ) HCMAXD(ISEA) = UNDEF
           IF ( FLOGRD( 2,17) ) WBT   (ISEA) = UNDEF
           IF ( FLOGRD( 2,19) ) WNMEAN(ISEA) = UNDEF
-		  IF ( FLOGRD( 2,21) ) CTCOR (ISEA) = UNDEF
+	  IF ( FLOGRD( 2,21) ) CTCOR (ISEA) = UNDEF
           !
           IF ( FLOGRD( 3, 1) ) EF   (ISEA,:) = UNDEF
           IF ( FLOGRD( 3, 2) ) TH1M (ISEA,:) = UNDEF
