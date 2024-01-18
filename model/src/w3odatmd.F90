@@ -770,10 +770,7 @@ CONTAINS
     !
     ! 2) Standard mean wave parameters
     !
-    NOGE(2) = 19
-#ifdef W3_OASOCM
-    NOGE(2) = 20
-#endif
+    NOGE(2) = 21
     !
     IDOUT( 2, 1)  = 'Wave height         '
     IDOUT( 2, 2)  = 'Mean wave length    '
@@ -797,6 +794,7 @@ CONTAINS
 #ifdef W3_OASOCM
     IDOUT( 2, 20) = 'Mean wave dir. norot'
 #endif
+    IDOUT( 2, 21)  = 'Crest-trough corr. '
     !      IDOUT( 2,10)  = 'Mean wave dir. a2b2'
     !      IDOUT( 2,11)  = 'Mean dir. spr. a2b2'
     !      IDOUT( 2,12)  = 'Windsea height(Sin)'

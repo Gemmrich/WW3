@@ -2972,6 +2972,17 @@ CONTAINS
     META(1)%VARNG=''
     META(1)%VMIN = 0
     META(1)%VMAX = 32
+	! IFI=2, IFJ=21, CTCOR
+    META => GROUP(2)%FIELD(21)%META
+    META(1)%FSC    = 0.001
+    META(1)%UNITS  = '1'
+    META(1)%ENAME  = '.ctcor'
+    META(1)%VARNM='ctcor'
+    META(1)%VARNL='crest trough correlation'
+    META(1)%VARNS=''
+    META(1)%VARNG='crest_trough_correlation'
+    META(1)%VMIN = 0
+    META(1)%VMAX = 1
     !
     !---------- GROUP 3 ----------------
     !

@@ -2351,7 +2351,11 @@ CONTAINS
     !
     IF (FLOLOC(2, 17)) CALL CALC_WBT(A)
     !
-    RETURN
+	! Crest-trough correlation
+	!
+	IF (FLOLOC(2, 21)) CALL CALC_CTCOR(A)
+    !
+	RETURN
     !
     ! Formats
     !
@@ -2832,7 +2836,7 @@ CONTAINS
           IF ( FLOGRD( 2,16) ) HCMAXD(ISEA) = UNDEF
           IF ( FLOGRD( 2,17) ) WBT   (ISEA) = UNDEF
           IF ( FLOGRD( 2,19) ) WNMEAN(ISEA) = UNDEF
-	  IF ( FLOGRD( 2,21) ) CTCOR (ISEA) = UNDEF
+	      IF ( FLOGRD( 2,21) ) CTCOR (ISEA) = UNDEF
           !
           IF ( FLOGRD( 3, 1) ) EF   (ISEA,:) = UNDEF
           IF ( FLOGRD( 3, 2) ) TH1M (ISEA,:) = UNDEF
