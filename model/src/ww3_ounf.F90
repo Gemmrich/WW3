@@ -66,7 +66,11 @@ PROGRAM W3OUNF
   !/    22-Mar-2021 : New coupling fields output          ( version 7.12 )
   !/    02-Sep-2021 : Added coordinates attribute         ( version 7.12 )
   !/    14-Feb-2023 : Added QKK output                    ( version 7.12 )
+<<<<<<< HEAD
   !/    05_Dec_2023 : Add CTCOR parameter                 ( version 7.14 )
+=======
+  !/    03-Mar-2024 : Added SKEW & EMBIAS  output         ( version 7.xx )
+>>>>>>> develop
   !/
   !/    Copyright 2009-2013 National Weather Service (NWS),
   !/       National Oceanic and Atmospheric Administration.  All rights
@@ -194,7 +198,11 @@ PROGRAM W3OUNF
        CFLTHMAX, CFLXYMAX, CFLKMAX, TAUICE, PHICE,  &
        STMAXE, STMAXD, HMAXE, HCMAXE, HMAXD, HCMAXD,&
        P2SMS, EF, US3D, TH1M, STH1M, TH2M, STH2M,   &
+<<<<<<< HEAD
        WN, USSP, WBT, WNMEAN, QKK, CTCOR
+=======
+       WN, USSP, WBT, WNMEAN, QKK, SKEW, EMBIA1, EMBIA2
+>>>>>>> develop
   USE W3ODATMD, ONLY: NDSO, NDSE, SCREEN, NOGRP, NGRPP, IDOUT,     &
        UNDEF, FLOGRD, FNMPRE, NOSWLL, NOGE
   !
@@ -1964,6 +1972,18 @@ CONTAINS
             ! k bandwidth
           ELSE IF ( IFI .EQ. 8 .AND. IFJ .EQ. 6 ) THEN
             CALL S2GRID(QKK, X1)
+            !
+            ! surface elevation skewness lambda_3,0,0
+          ELSE IF ( IFI .EQ. 8 .AND. IFJ .EQ. 7 ) THEN
+            CALL S2GRID(SKEW, X1)
+            !
+            ! em bias param 1
+          ELSE IF ( IFI .EQ. 8 .AND. IFJ .EQ. 8 ) THEN
+            CALL S2GRID(EMBIA1, X1)
+            !
+            ! em bias param 2
+          ELSE IF ( IFI .EQ. 8 .AND. IFJ .EQ. 9 ) THEN
+            CALL S2GRID(EMBIA2, X1)
             !
             ! Dynamic time step
           ELSE IF ( IFI .EQ. 9 .AND. IFJ .EQ. 1 ) THEN
