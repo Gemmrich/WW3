@@ -2151,11 +2151,8 @@ CONTAINS
          STMAXE, STMAXD, HMAXE, HCMAXE, HMAXD,     &
          HCMAXD, QP, PTHP0, PQP, PPE, PGW, PSW,    &
          PTM1, PT1, PT2, PEP, WBT, CX, CY,         &
-<<<<<<< HEAD
-         TAUOCX, TAUOCY, WNMEAN, QKK, CTCOR
-=======
-         TAUOCX, TAUOCY, WNMEAN, QKK, SKEW, EMBIA1, EMBIA2
->>>>>>> develop
+         TAUOCX, TAUOCY, WNMEAN, QKK, CTCOR,       &
+         SKEW, EMBIA1, EMBIA2
 #endif
 
 #ifdef W3_MPI

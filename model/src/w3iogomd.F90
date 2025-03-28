@@ -74,11 +74,8 @@ MODULE W3IOGOMD
   !/    22-Mar-2021 : Add extra coupling fields as output ( version 7.13 )
   !/    21-Jul-2022 : Correct FP0 calc for peak energy in ( version 7.14 )
   !/                  min/max freq band (B. Pouliot, CMC)
-<<<<<<< HEAD
   !/    05_Dec_2023 : Add CTCOR output parameter          ( version 7.14 )
-=======
   !/    02-Mar-2024 : Add skweness and EM bias varaible   ( version 7.xx )
->>>>>>> develop
   !/
   !/    Copyright 2009-2024 National Weather Service (NWS),
   !/       National Oceanic and Atmospheric Administration.  All rights
@@ -2445,11 +2442,8 @@ CONTAINS
     !/                  processing code)
     !/    25-Aug-2018 : Add WBT parameter                   ( version 6.06 )
     !/    22-Mar-2021 : Add extra coupling fields as output ( version 7.13 )
-<<<<<<< HEAD
     !/    05-Dec-2023 : Add CTCOR parameter                 ( version 7.14 )
-=======
     !/    07-Mar-2024 : Add Skewness parameters             ( version 7.13 )
->>>>>>> develop
     !/
     !  1. Purpose :
     !
@@ -4677,7 +4671,6 @@ CONTAINS
   END SUBROUTINE CALC_WBT
   !/ ------------------------------------------------------------------- /
   !/
-<<<<<<< HEAD
   !/ ------------------------------------------------------------------- /
   !>
   !> @brief Calculate the crest-trough correlation r.
@@ -4856,7 +4849,6 @@ CONTAINS
     !/
   END SUBROUTINE CALC_CTCOR
   !/ ------------------------------------------------------------------- /
-=======
   !>
   !> @brief  Computation of second order harmonics and
   !>         relevant tables for the altimeter corrections
@@ -5364,5 +5356,5 @@ USE W3ADATMD,  ONLY: CG, SKEW, EMBIA1, EMBIA2
 
       END SUBROUTINE SKEWNESS
 
->>>>>>> develop
+
 END MODULE W3IOGOMD

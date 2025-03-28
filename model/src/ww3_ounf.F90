@@ -66,11 +66,8 @@ PROGRAM W3OUNF
   !/    22-Mar-2021 : New coupling fields output          ( version 7.12 )
   !/    02-Sep-2021 : Added coordinates attribute         ( version 7.12 )
   !/    14-Feb-2023 : Added QKK output                    ( version 7.12 )
-<<<<<<< HEAD
   !/    05_Dec_2023 : Add CTCOR parameter                 ( version 7.14 )
-=======
   !/    03-Mar-2024 : Added SKEW & EMBIAS  output         ( version 7.xx )
->>>>>>> develop
   !/
   !/    Copyright 2009-2013 National Weather Service (NWS),
   !/       National Oceanic and Atmospheric Administration.  All rights
@@ -198,11 +195,9 @@ PROGRAM W3OUNF
        CFLTHMAX, CFLXYMAX, CFLKMAX, TAUICE, PHICE,  &
        STMAXE, STMAXD, HMAXE, HCMAXE, HMAXD, HCMAXD,&
        P2SMS, EF, US3D, TH1M, STH1M, TH2M, STH2M,   &
-<<<<<<< HEAD
-       WN, USSP, WBT, WNMEAN, QKK, CTCOR
-=======
-       WN, USSP, WBT, WNMEAN, QKK, SKEW, EMBIA1, EMBIA2
->>>>>>> develop
+       WN, USSP, WBT, WNMEAN, QKK, CTCOR,           &
+       SKEW, EMBIA1, EMBIA2
+  !
   USE W3ODATMD, ONLY: NDSO, NDSE, SCREEN, NOGRP, NGRPP, IDOUT,     &
        UNDEF, FLOGRD, FNMPRE, NOSWLL, NOGE
   !
