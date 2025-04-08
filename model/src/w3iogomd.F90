@@ -4768,6 +4768,7 @@ CONTAINS
     USE W3GDATMD, ONLY: NK, NTH, NSEAL, SIG, DTH, DSII, &
            MAPSF, MAPSTA
     USE W3PARALL, ONLY: INIT_GET_ISEA
+    USE CONSTANTS, ONLY: TPI
 #ifdef W3_S
     USE W3SERVMD, ONLY: STRACE
 #endif
@@ -4789,7 +4790,7 @@ CONTAINS
     INTEGER              :: FPOPT = 0
     !
     INTEGER              :: IK, ITH, ISEA, JSEA, IKM, IKL, IKH, IX, IY
-    REAL                 :: TC, RHOCT, LAMBDACT, M0, M1, TMS
+    REAL                 :: RHOCT, LAMBDACT, M0, M1, TMS,SIGMIN,SIGMAX
     REAL                 :: ESINST(NK), ECOSST(NK), ESIG(NK) ! E(σ)
     REAL                 :: FACTOR
     REAL                 :: TCTCOR
@@ -4799,6 +4800,9 @@ CONTAINS
 #ifdef W3_S
     CALL STRACE (IENT, 'CALC_CTCOR')
 #endif
+    !
+    SIGMIN = 0.04 * 2. * TPI  ! low frequency cutoff
+    SIGMAX = 0.80 * 2. * TPI  ! high frequency cutoff
     !
     DO JSEA = 1, NSEAL
       ! JSEA 2 ISEA
@@ -4815,7 +4819,6 @@ CONTAINS
       ESIG  = 0.                           ! E(σ)
       !
       DO IK = 1, NK
-        TC     = SIG(IK) / WN(IK, ISEA)  ! phase velocity c=σ/k
         FACTOR = SIG(IK) / CG(IK, ISEA)  ! σ / cg
         FACTOR = FACTOR * DTH            ! σ / cg * δθ
         !
@@ -4827,23 +4830,39 @@ CONTAINS
       !
       ! ESIG is S(f).
       !
-      ! Next: calculate moments, and mean spectral period TMS
-      M0 = SUM(ESIG * DSII)
-      M1 = SUM(SIG * ESIG * DSII)
-	  TMS = M0 / M1                       ! mean spectral period
-	  !
-	  DO IK = 1, NK
-	   ECOSST(IK) = ESIG(IK) * COS(SIG(IK) * TMS/2.)
-	   ESINST(IK) = ESIG(IK) * SIN(SIG(IK) * TMS/2.)
-	  ENDDO
-	  !
-	  RHOCT    = SUM(ECOSST * DSII)
-	  LAMBDACT = SUM(ESINST * DSII)
-	  !
-	  TCTCOR = SQRT(MAX(0.,RHOCT**2 + LAMBDACT**2)) / M0   ! crest-trough correlation
+ ! Next: calculate moments, and mean spectral period TMS
+      ! a) based on the full spectral range:
+      !M0 = SUM(ESIG * DSII)
+      !M1 = SUM(SIG * ESIG * DSII)
+
+      ! b) based on an optimized spectral subrange only:
+
+      M0 = 0.
+      M1 = 0.
+      !
+      DO IK = 1, NK
+       IF (SIG(IK) .GE. SIGMIN .AND. SIG(IK) .LE. SIGMAX) THEN
+        M0 = M0 + ESIG(IK) * DSII(IK)
+        M1 = M1 + SIG(IK) * ESIG(IK) * DSII(IK)
+       ENDIF
+      ENDDO ! IK
+      !
+      !
+      TMS = 0.
+      IF (M1 .GT. 0.) TMS = M0 / M1              ! mean spectral period
+      !
+      DO IK = 1, NK
+        ECOSST(IK) = ESIG(IK) * COS(2. * TPI * SIG(IK) * TMS/2.)
+        ESINST(IK) = ESIG(IK) * SIN(2. * TPI * SIG(IK) * TMS/2.)
+      ENDDO
+      !
+      RHOCT    = SUM(ECOSST * DSII)
+      LAMBDACT = SUM(ESINST * DSII)
+      !
+      TCTCOR = SQRT(MAX(0.,RHOCT**2 + LAMBDACT**2)) / M0   ! crest-trough correlation
       CTCOR(JSEA) = MIN(1.0, TCTCOR)!
       !
-    ENDDO ! JSEA
+     ENDDO ! JSEA
     !/
     !/ End of  CALC_CTCOR -------------------------------------------------- /
     !/
